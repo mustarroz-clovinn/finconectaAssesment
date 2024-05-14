@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: products-mongo
+  name: products-mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products-mongo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: products-mongo
+    spec:
+      containers:
+      - image: martinustarroz83/products-mongo:v1
+        name: products-mongo
+        ports:
+        - containerPort: 8010
+        env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: products-mongo
+                key: port
+          - name: DB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: products-mongo
+                key: database
+          - name: MONGO_CONNECTION
+            valueFrom:
+              secretKeyRef:
+                name: products-mongo
+                key: mongo_connection

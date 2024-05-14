@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  users_postgre:
+    container_name: users_postgre
+    image: users_postgre:0.0.1
+    ports:
+      - '8010:8010'
+      
+      

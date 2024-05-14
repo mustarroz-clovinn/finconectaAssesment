@@ -1,0 +1,72 @@
+version: "3.9"
+services:
+  postgreDb:
+    container_name: postgreDb
+    image: postgres:14-alpine
+    restart: always
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: usuariosDb 
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    networks:
+      - spring
+      
+  mongodatabase:
+    container_name: mongodb
+    image: mongo:5
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: products
+    volumes:
+      - ./mongo:/data/db
+    networks:
+      - spring 
+
+  product-mongo:
+    container_name: product-mongo
+    build: 
+      context: ./
+      dockerfile: ./products.mongo/Dockerfile
+    ports:
+      - "8010:8010"
+    environment:
+      PORT: 8010
+      MONGO_CONNECTION: mongodb://mongodb:27017/products      
+      DB_DATABASE: productsDb
+    networks:
+      - spring
+    depends_on:
+      - mongodb
+    restart: always
+    
+  users-postgre:
+    container_name: users-postgre
+    build: 
+      context: ./
+      dockerfile: ./users.postgre/Dockerfile
+    ports:
+      - "8020:8020"
+    environment:
+      PORT: 8020
+      DB_HOST: postgreDb:5432
+      DB_DATABASE: usuariosDb
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    networks:
+      - spring
+    depends_on:
+      - postgreDb
+    restart: always
+    
+volumes:
+  data-postgres:
+    name: data-postgres
+    
+networks:
+  spring:   
+      

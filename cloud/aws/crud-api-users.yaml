@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-postgres
+  template:
+    metadata:
+      labels:
+        app: users-postgres
+    spec:
+      containers:
+        - name: users
+          image: martinustarroz83/users-postgre:v1
+          ports:
+            - containerPort: 8020
+          env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: users-postgres
+                key: port
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: users-postgres
+                key: db_host
+          - name: DB_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: users-postgres
+                key: database
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: users-postgres
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: users-postgres
+                key: password
